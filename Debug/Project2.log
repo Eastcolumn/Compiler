@@ -1,7 +1,0 @@
-﻿  소스.c
-C:\Users\gsi19\Documents\GitHub\Compiler\소스.c(21,20): warning C4022: 'fread': 실제 매개 변수 1의 포인터가 일치하지 않습니다.
-C:\Users\gsi19\Documents\GitHub\Compiler\소스.c(23,9): warning C4477: 'printf' : 서식 문자열 '%s'에 'char *' 형식의 인수가 필요하지만 variadic 인수 1의 형식이 'int'입니다.
-C:\Users\gsi19\Documents\GitHub\Compiler\소스.c(41,26): warning C4047: '함수': 'int'의 간접 참조 수준이 'char *'과(와) 다릅니다.
-C:\Users\gsi19\Documents\GitHub\Compiler\소스.c(41,26): warning C4024: 'parseSave': 형식 및 실제 매개 변수 3의 형식이 서로 다릅니다.
-C:\Users\gsi19\Documents\GitHub\Compiler\소스.c(24): warning C4716: 'parseSave': 값을 반환해야 합니다.
-  Project2.vcxproj -> C:\Users\gsi19\Documents\GitHub\Compiler\Debug\Project2.exe
