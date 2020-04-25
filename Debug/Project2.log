@@ -1,3 +1,7 @@
 ﻿  소스.c
+<<<<<<< HEAD
 C:\Users\gsi19\Documents\GitHub\Compiler\소스.c(30,13): warning C4098: 'parseSave': 'void' 함수에서 값을 반환하고 있습니다.
   Project2.vcxproj -> C:\Users\gsi19\Documents\GitHub\Compiler\Debug\Project2.exe
+=======
+  Project2.vcxproj -> C:\Users\rlaeh\OneDrive\바탕 화면\3학년 1학기\컴파일러\Project2\Debug\Project2.exe
+>>>>>>> e6013b7550b2c908410a1c5ca7af0246a4aa7f5d
