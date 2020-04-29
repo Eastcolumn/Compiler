@@ -7,25 +7,16 @@
 //main함수에서 save, size만들고 parseSave에 file이랑 save 넣는다
 //parseSave는 save안에 file을 한글자씩 넣고 size return한다.
 
-int parseRead(FILE* fp) {
-	int size;
-	fseek(fp, 0, SEEK_END);    // 파일 포인터를 파일의 끝으로 이동시킴
-	size = ftell(fp);          // 파일 포인터의 현재 위치를 얻음
+typedef struct {
+	char* name;
+	char* value;
+}token;
 
-	return size;
-}
-int parseSave(FILE* fp, int size, int save) {
-	int count;
+int parseRead(FILE* fp);
+void parseSave(FILE* fp, int size, char* save);
+void compile();
+int checkLBLAN(char* save, int* p_count, token* out);
 
-	fseek(fp, 0, SEEK_SET);                
-	count = fread(save, size, 1, fp); 
-
-	printf("%s size: %d, count: %d\n", save, size, count);
-}
-
-void compile() {
-
-}
 
 int main(int argc, char* argv[]) {
 	//나중에 argc가 *fp가 되게 하면 될듯?
@@ -34,19 +25,54 @@ int main(int argc, char* argv[]) {
 
 	char* save = NULL;
 	int size;
-
+	token* out;
+	
 	size = parseRead(fp);
 	save = malloc(size + 1);    // 파일 크기 + 1바이트(문자열 마지막의 NULL)만큼 동적 메모리 할당
 	memset(save, 0, size + 1);  // 파일 크기 + 1바이트만큼 메모리를 0으로 초기화
 	parseSave(fp, size, save);
-
-
-	for (int i = 0; i < size; i++) {
-		printf("%c", save[i]);
-	}
-
+	out = malloc(size * sizeof(token)); // token 배열 동적할당
+	
+	//test
+	compile(save, size, out);
+	//test
 	fclose(fp);     // 파일 포인터 닫기
+	free(save);
+	return 0;
+}
 
-	system("pause>nul"); //대기걸어놓음
+int parseRead(FILE* fp) {
+	int size;
+	fseek(fp, 0, SEEK_END);    // 파일 포인터를 파일의 끝으로 이동시킴
+	size = ftell(fp);          // 파일 포인터의 현재 위치를 얻음
+
+	return size;
+}
+
+void parseSave(FILE* fp, int size, char* save) {
+	int count;
+
+	fseek(fp, 0, SEEK_SET);
+	count = fread(save, size, 1, fp);
+}
+
+void compile(char* save, int size, token* out) {
+	int i, row, count = 0,loop = 1;
+	while (loop) {
+		if (checkLBLAN(save, &count, out) == 1) {
+			continue;
+		}
+		loop--;
+	}
+}
+
+int checkLBLAN(char* save, int* p_count, token* out) {
+	
+	while (save[*p_count] != '\0') {
+		if ('(' == save[(*p_count)++]) {
+			printf("success");
+			return 1;
+		}
+	}
 	return 0;
 }

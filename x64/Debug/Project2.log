@@ -1,0 +1,5 @@
+﻿  소스.c
+C:\Users\gsi19\Documents\GitHub\Compiler\소스.c(51,34): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gsi19\Documents\GitHub\Compiler\소스.c(55,9): warning C4101: 'row' :참조되지 않은 지역 변수입니다.
+C:\Users\gsi19\Documents\GitHub\Compiler\소스.c(55,6): warning C4101: 'i' :참조되지 않은 지역 변수입니다.
+  Project2.vcxproj -> C:\Users\gsi19\Documents\GitHub\Compiler\x64\Debug\Project2.exe
