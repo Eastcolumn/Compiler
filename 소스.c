@@ -8,36 +8,43 @@
 //parseSave는 save안에 file을 한글자씩 넣고 size return한다.
 
 typedef struct {
-	char* name;
-	char* value;
+	char name[100];
+	char value[50];
 }token;
 
 int parseRead(FILE* fp);
-void parseSave(FILE* fp, int size, char* save);
-void compile();
-int checkLBLAN(char* save, int* p_count, token* out);
+void parseSave(FILE* fp);
+void compile(token* out);
+int checkLBLAN(int* p_count);
 
+char* save = NULL;
+int size;
+token* out;
+int out_count = 0;
 
 int main(int argc, char* argv[]) {
+	int i;
 	//나중에 argc가 *fp가 되게 하면 될듯?
 	FILE* fp = fopen("data.c", "r");    // 파일을 읽기 모드(r)로 열기.
 										   // 파일 포인터를 반환
-
-	char* save = NULL;
-	int size;
-	token* out;
-	
 	size = parseRead(fp);
 	save = malloc(size + 1);    // 파일 크기 + 1바이트(문자열 마지막의 NULL)만큼 동적 메모리 할당
 	memset(save, 0, size + 1);  // 파일 크기 + 1바이트만큼 메모리를 0으로 초기화
-	parseSave(fp, size, save);
-	out = malloc(size * sizeof(token)); // token 배열 동적할당
-	
-	//test
-	compile(save, size, out);
-	//test
+	parseSave(fp);
 	fclose(fp);     // 파일 포인터 닫기
+
+	out = malloc(size * sizeof(token)); // token 배열 동적할당
+	compile(out);
+	
+	// 출력
+	FILE* fp2 = fopen("test.out", "w");
+	for (i = 0; i < out_count; i++) {
+		fprintf(fp2, "%s\t\t%s\t\t\n", out[i].name, out[i].value);
+	}
+	fclose(fp2);
+
 	free(save);
+	free(out);
 	return 0;
 }
 
@@ -49,28 +56,32 @@ int parseRead(FILE* fp) {
 	return size;
 }
 
-void parseSave(FILE* fp, int size, char* save) {
+void parseSave(FILE* fp) {
 	int count;
 
 	fseek(fp, 0, SEEK_SET);
 	count = fread(save, size, 1, fp);
 }
 
-void compile(char* save, int size, token* out) {
-	int i, row, count = 0,loop = 1;
+void compile() {
+	int i, row, count = 0, loop = 1;
 	while (loop) {
-		if (checkLBLAN(save, &count, out) == 1) {
+		if (checkLBLAN(&count, out) == 1) {
 			continue;
 		}
 		loop--;
 	}
 }
 
-int checkLBLAN(char* save, int* p_count, token* out) {
-	
+int checkLBLAN(int* p_count) {
+	int i = *p_count, c_input = 0, j;
+	char input[100];
+	memset(input, NULL, 100);
 	while (save[*p_count] != '\0') {
+		input[c_input++] = save[*p_count];
 		if ('(' == save[(*p_count)++]) {
-			printf("success");
+			strcpy(out[out_count].name, input);
+			strcpy(out[out_count++].value, "LBLAN");
 			return 1;
 		}
 	}
