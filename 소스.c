@@ -21,8 +21,6 @@ int checkLparen(int* p_count);
 int checkRparen(int* p_count);
 
 
-
-
 char* save = NULL;
 int size;
 token* out;
@@ -84,6 +82,10 @@ void compile() {
 		if (checkTerminate(&count) == 1)
 			continue;
 		if (checkOperator(&count) == 1)
+			continue;
+		if (checkWhiteSpace(&count) == 1)
+			continue;
+		if (checkWord(&count) == 1)
 			continue;
 		loop--;
 	}
@@ -262,25 +264,31 @@ int checkOperator(int* p_count) {
 		return 1;
 	}
 	else if ('+' == save[(*p_count)]) {
-		input[c_input++] = save[(*p_count)++];
+		(*p_count)++;
 		strcpy(out[out_count].value, input);
 		strcpy(out[out_count++].name, "Arithmetic");
 		return 1;
 	}
 	else if ('-' == save[(*p_count)]) {
-		input[c_input++] = save[(*p_count)++];
+		(*p_count)--;
+		if (!(checkLetter(p_count) || checkDigit(p_count) ||
+			'0' == save[(*p_count)] || '_' == save[(*p_count)])) {
+			(*p_count) = i;
+			return 0;
+		}
+		(*p_count)+= 2;
 		strcpy(out[out_count].value, input);
-		strcpy(out[out_count++].name, "Arithmetic");
+		strcpy(out[out_count++].name, "Comparison");
 		return 1;
 	}
 	else if ('*' == save[(*p_count)]) {
-		input[c_input++] = save[(*p_count)++];
+		(*p_count)++;
 		strcpy(out[out_count].value, input);
 		strcpy(out[out_count++].name, "Arithmetic");
 		return 1;
 	}
 	else if ('/' == save[(*p_count)]) {
-		input[c_input++] = save[(*p_count)++];
+		(*p_count)++;
 		strcpy(out[out_count].value, input);
 		strcpy(out[out_count++].name, "Arithmetic");
 		return 1;
@@ -289,15 +297,144 @@ int checkOperator(int* p_count) {
 	return 0;
 }
 
-//int checkBlank(int* p_count) {
-//	int i = *p_count;
-//
-//	while (save[*p_count] != '\0') {
-//		if (save[(*p_count)] == ' ') {
-//			return 1;
-//		}
-//	}
-//	*p_count = i;
-//
-//	return 0;
-//}
+int checkBlank(int* p_count) {
+	if (' ' == save[(*p_count)]) {
+		return 1;
+	}
+	return 0;
+}
+
+int checkWhiteSpace(int* p_count) {
+	int i = *p_count, c_input = 0, j;
+	char input[100];
+	memset(input, NULL, 100);
+	input[c_input++] = save[*p_count];
+	if (checkBlank(p_count)) {
+		(*p_count)++;
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "WhiteSpace");
+		return 1;
+	}
+	else if ('\n' == save[(*p_count)]) {
+		(*p_count)++;
+		strcpy(out[out_count].value, "\\n");
+		strcpy(out[out_count++].name, "WhiteSpace");
+		return 1;
+	}
+	else if ('\t' == save[(*p_count)]) {
+		(*p_count)++;
+		strcpy(out[out_count].value, "\\t");
+		strcpy(out[out_count++].name, "WhiteSpace");
+		return 1;
+	}
+	else if ('\\' == save[(*p_count)]) {
+		(*p_count)++;
+		if ('n' == save[(*p_count)]) {
+			input[c_input++] = save[(*p_count)++];
+			strcpy(out[out_count].value, input);
+			strcpy(out[out_count++].name, "WhiteSpace");
+			return 1;
+		}
+		else if ('t' == save[(*p_count)]) {
+			input[c_input++] = save[(*p_count)++];
+			strcpy(out[out_count].value, input);
+			strcpy(out[out_count++].name, "WhiteSpace");
+			return 1;
+		}
+		else {
+			// 아마도 error일듯
+		}
+	}
+	(*p_count) = i;
+	return 0;
+}
+
+int checkDigit(int* p_count) {
+	if (1 <= save[(*p_count)]-'0' && (int)save[(*p_count)]-'0' <= 9) {
+		return 1;
+	}
+	return 0;
+}
+
+int checkLetter(int* p_count) {
+	if (('A' <= save[(*p_count)] && save[(*p_count)] <= 'Z') ||
+		('a' <= save[(*p_count)] && save[(*p_count)] <= 'z')) {
+		return 1;
+	}
+	return 0;
+}
+
+int checkWord(int* p_count) {
+	int i = *p_count, c_input = 0, j;
+	char input[100];
+	memset(input, NULL, 100);
+	while (1) {
+		if (checkLetter(p_count) || checkDigit(p_count) ||
+			'0' == save[(*p_count)] || '_' == save[(*p_count)]) {
+			input[c_input++] = save[(*p_count)++];
+		}
+		else
+			break;
+	}
+
+	if (input[0] == NULL)
+		return 0;
+	else if (strcmp(input, "int") == 0 || strcmp(input, "char") == 0 ||
+		strcmp(input, "float") == 0 || strcmp(input, "bool") == 0)
+	{
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "VariableType");
+		return 1;
+	}
+	else if (strcmp(input, "if") == 0 || strcmp(input, "else") == 0 ||
+		strcmp(input, "while") == 0 || strcmp(input, "for") == 0 ||
+		strcmp(input, "return") == 0)
+	{
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Keyword");
+		return 1;
+	}
+	else if (strcmp(input, "if") == 0 || strcmp(input, "else") == 0) {
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "BooleanString");
+		return 1;
+	}
+	else {
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Identifier");
+		return 1;
+	}
+}
+
+int checkInteger(int* p_count) {
+	int i = *p_count, c_input = 0;
+	char input[100];
+	memset(input, NULL, 100);
+	if (checkDigit(*p_count)) {
+		(*p_count)++;
+		while (1) {
+			if (checkDigit(p_count) || '0' == save[(*p_count)]) {
+				input[c_input++] = save[(*p_count)++];
+			}
+			else
+				break;
+		}
+
+	}
+	else if ('-' == save[(*p_count)]) {
+		(*p_count)--;
+		if (checkLetter(p_count) || checkDigit(p_count) ||
+			'0' == save[(*p_count)] || '_' == save[(*p_count)]) {
+			(*p_count) = i;
+			return 0;
+		}
+		(*p_count)++;
+
+		if (checkDigit(*p_count)) {
+
+		}
+	}
+
+	(*p_count) = i;
+	return 0;
+}
