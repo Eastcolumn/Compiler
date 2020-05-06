@@ -1,1 +1,13 @@
-(		LBLAN		
+		type				value		
+               Lbrac                   (
+               Rbrac                   )
+              Lparen                   {
+              Rparen                   }
+          Assignment                   =
+               Rbrac                   )
+          Teriminate                   ;
+             Bitwise                  >>
+          Assignment                   =
+          Comparison                   <
+          Comparison                  >=
+          Assignment                   =

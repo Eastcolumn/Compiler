@@ -14,8 +14,14 @@ typedef struct {
 
 int parseRead(FILE* fp);
 void parseSave(FILE* fp);
-void compile(token* out);
-int checkLBLAN(int* p_count);
+void compile();
+int checkLbrac(int* p_count);
+int checkRbrac(int* p_count);
+int checkLparen(int* p_count);
+int checkRparen(int* p_count);
+
+
+
 
 char* save = NULL;
 int size;
@@ -34,12 +40,13 @@ int main(int argc, char* argv[]) {
 	fclose(fp);     // 파일 포인터 닫기
 
 	out = malloc(size * sizeof(token)); // token 배열 동적할당
-	compile(out);
-	
+	compile();
+
 	// 출력
 	FILE* fp2 = fopen("test.out", "w");
+	fprintf(fp2, "\t\ttype\t\t\t\tvalue\t\t\n");
 	for (i = 0; i < out_count; i++) {
-		fprintf(fp2, "%s\t\t%s\t\t\n", out[i].name, out[i].value);
+		fprintf(fp2, "%20s%20s\n", out[i].name, out[i].value);
 	}
 	fclose(fp2);
 
@@ -66,24 +73,231 @@ void parseSave(FILE* fp) {
 void compile() {
 	int i, row, count = 0, loop = 1;
 	while (loop) {
-		if (checkLBLAN(&count, out) == 1) {
+		if (checkLbrac(&count) == 1)
 			continue;
-		}
+		if (checkRbrac(&count) == 1)
+			continue;
+		if (checkLparen(&count) == 1)
+			continue;
+		if (checkRparen(&count) == 1)
+			continue;
+		if (checkTerminate(&count) == 1)
+			continue;
+		if (checkOperator(&count) == 1)
+			continue;
 		loop--;
 	}
 }
 
-int checkLBLAN(int* p_count) {
+// 함수 예시----------------------------------------------
+//int i = *p_count, c_input = 0, j;
+//char input[100];
+//memset(input, NULL, 100);
+//while (save[*p_count] != '\0') {
+//	input[c_input++] = save[*p_count];
+//	if ('(' == save[(*p_count)++]) {
+//		strcpy(out[out_count].value, input);
+//		strcpy(out[out_count++].name, "Lbrac");
+//		return 1;
+//	}
+//}
+//return 0;
+// ---------------------------------------------------
+
+int checkLbrac(int* p_count) {
 	int i = *p_count, c_input = 0, j;
 	char input[100];
 	memset(input, NULL, 100);
-	while (save[*p_count] != '\0') {
-		input[c_input++] = save[*p_count];
-		if ('(' == save[(*p_count)++]) {
-			strcpy(out[out_count].name, input);
-			strcpy(out[out_count++].value, "LBLAN");
+	input[c_input++] = save[*p_count];
+	if ('(' == save[(*p_count)++]) {
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Lbrac");
+		return 1;
+	}
+	else
+		(*p_count)--;
+	return 0;
+}
+
+int checkRbrac(int* p_count) {
+	int i = *p_count, c_input = 0, j;
+	char input[100];
+	memset(input, NULL, 100);
+	input[c_input++] = save[*p_count];
+	if (')' == save[(*p_count)++]) {
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Rbrac");
+		return 1;
+	}
+	else
+		(*p_count)--;
+	return 0;
+}
+
+int checkLparen(int* p_count) {
+	int i = *p_count, c_input = 0, j;
+	char input[100];
+	memset(input, NULL, 100);
+	input[c_input++] = save[*p_count];
+	if ('{' == save[(*p_count)++]) {
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Lparen");
+		return 1;
+	}
+	else
+		(*p_count)--;
+	return 0;
+}
+
+int checkRparen(int* p_count) {
+	int i = *p_count, c_input = 0, j;
+	char input[100];
+	memset(input, NULL, 100);
+	input[c_input++] = save[*p_count];
+	if ('}' == save[(*p_count)++]) {
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Rparen");
+		return 1;
+	}
+	else
+		(*p_count)--;
+	return 0;
+}
+
+int checkTerminate(int* p_count) {
+	int i = *p_count, c_input = 0, j;
+	char input[100];
+	memset(input, NULL, 100);
+	input[c_input++] = save[*p_count];
+	if (';' == save[(*p_count)++]) {
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Teriminate");
+		return 1;
+	}
+	else
+		(*p_count)--;
+	return 0;
+}
+
+int checkOperator(int* p_count) {
+	int i = *p_count, c_input = 0, j;
+	char input[100];
+	memset(input, NULL, 100);
+	input[c_input++] = save[*p_count];
+
+	if ('=' == save[(*p_count)]) {
+		(*p_count)++;
+		if ('=' == save[(*p_count)]) {
+			input[c_input++] = save[(*p_count)++];
+			strcpy(out[out_count].value, input);
+			strcpy(out[out_count++].name, "Comparison");
+			return 1;
+		}
+		else {
+			strcpy(out[out_count].value, input);
+			strcpy(out[out_count++].name, "Assignment");
 			return 1;
 		}
 	}
+	else if ('<' == save[(*p_count)]) {
+		(*p_count)++;
+		if ('=' == save[(*p_count)]) {
+			input[c_input++] = save[(*p_count)++];
+			strcpy(out[out_count].value, input);
+			strcpy(out[out_count++].name, "Comparison");
+			return 1;
+		}
+		else if ('<' == save[(*p_count)]) {
+			input[c_input++] = save[(*p_count)++];
+			strcpy(out[out_count].value, input);
+			strcpy(out[out_count++].name, "Bitwise");
+			return 1;
+		}
+		else {
+			strcpy(out[out_count].value, input);
+			strcpy(out[out_count++].name, "Comparison");
+			return 1;
+		}
+	}
+	else if ('>' == save[(*p_count)]) {
+		(*p_count)++;
+		if ('=' == save[(*p_count)]) {
+			input[c_input++] = save[(*p_count)++];
+			strcpy(out[out_count].value, input);
+			strcpy(out[out_count++].name, "Comparison");
+			return 1;
+		}
+		else if ('>' == save[(*p_count)]) {
+			input[c_input++] = save[(*p_count)++];
+			strcpy(out[out_count].value, input);
+			strcpy(out[out_count++].name, "Bitwise");
+			return 1;
+		}
+		else {
+			strcpy(out[out_count].value, input);
+			strcpy(out[out_count++].name, "Comparison");
+			return 1;
+		}
+	}
+	else if ('!' == save[(*p_count)]) {
+		(*p_count)++;
+		if ('=' == save[(*p_count)]) {
+			input[c_input++] = save[(*p_count)++];
+			strcpy(out[out_count].value, input);
+			strcpy(out[out_count++].name, "Comparison");
+			return 1;
+		}
+		(*p_count)--;
+	}
+	else if ('&' == save[(*p_count)]) {
+		input[c_input++] = save[(*p_count)++];
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Bitwise");
+		return 1;
+	}
+	else if ('|' == save[(*p_count)]) {
+		input[c_input++] = save[(*p_count)++];
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Bitwise");
+		return 1;
+	}
+	else if ('+' == save[(*p_count)]) {
+		input[c_input++] = save[(*p_count)++];
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Arithmetic");
+		return 1;
+	}
+	else if ('-' == save[(*p_count)]) {
+		input[c_input++] = save[(*p_count)++];
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Arithmetic");
+		return 1;
+	}
+	else if ('*' == save[(*p_count)]) {
+		input[c_input++] = save[(*p_count)++];
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Arithmetic");
+		return 1;
+	}
+	else if ('/' == save[(*p_count)]) {
+		input[c_input++] = save[(*p_count)++];
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Arithmetic");
+		return 1;
+	}
+	(*p_count) = i;
 	return 0;
 }
+
+//int checkBlank(int* p_count) {
+//	int i = *p_count;
+//
+//	while (save[*p_count] != '\0') {
+//		if (save[(*p_count)] == ' ') {
+//			return 1;
+//		}
+//	}
+//	*p_count = i;
+//
+//	return 0;
+//}
