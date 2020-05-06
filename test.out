@@ -1,23 +1,2 @@
 		type				value		
-        VariableType                 int
-          WhiteSpace                    
-          Identifier                main
-               Lbrac                   (
-               Rbrac                   )
-          WhiteSpace                    
-              Lparen                   {
-          WhiteSpace                  \n
-          WhiteSpace                  \t
-          Identifier              printf
-               Lbrac                   (
-       LiteralString       "Hello World"
-               Rbrac                   )
-          Teriminate                   ;
-          WhiteSpace                  \n
-          WhiteSpace                  \t
-             Keyword              return
-          WhiteSpace                    
-       SignedInteger                   0
-          Teriminate                   ;
-          WhiteSpace                  \n
-              Rparen                   }
+          Identifier              int123
