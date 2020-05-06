@@ -1,2 +1,4 @@
-(){}=);>>=<>==+-*/
-\t\n a1 int if
+int main() {
+	printf("Hello World");
+	return 0;
+}

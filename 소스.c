@@ -25,6 +25,7 @@ char* save = NULL;
 int size;
 token* out;
 int out_count = 0;
+int line = 1;
 
 int main(int argc, char* argv[]) {
 	int i;
@@ -86,6 +87,12 @@ void compile() {
 		if (checkWhiteSpace(&count) == 1)
 			continue;
 		if (checkWord(&count) == 1)
+			continue;
+		if (checkInteger(&count) == 1)
+			continue;
+		if (checkComma(&count) == 1)
+			continue;
+		if (checkLiteral(&count) == 1)
 			continue;
 		loop--;
 	}
@@ -270,15 +277,37 @@ int checkOperator(int* p_count) {
 		return 1;
 	}
 	else if ('-' == save[(*p_count)]) {
-		(*p_count)--;
-		if (!(checkLetter(p_count) || checkDigit(p_count) ||
-			'0' == save[(*p_count)] || '_' == save[(*p_count)])) {
-			(*p_count) = i;
-			return 0;
+		if (*p_count == 0) {
+			(*p_count)++;
+			while (save[*p_count] == ' ' || save[*p_count] == '\n' || save[*p_count] == '\t') {
+				(*p_count)++;
+			}
+			if (!(save[*p_count] == '_' || checkLetter(p_count))) {
+				(*p_count) = i;
+					return 0;
+			}
 		}
-		(*p_count)+= 2;
+		else {
+			int temp = (*p_count)--;
+			while (save[*p_count] == ' ' || save[*p_count] == '\n' || save[*p_count] == '\t') {
+				(*p_count)--;
+			}
+			if (!(checkLetter(p_count) || checkDigit(p_count) ||
+				'0' == save[(*p_count)] || '_' == save[(*p_count)]))
+			{
+				(*p_count) = temp + 1;
+				while (save[*p_count] == ' ' || save[*p_count] == '\n' || save[*p_count] == '\t') {
+					(*p_count)++;
+				}
+				if (!(save[*p_count] == '_' || checkLetter(p_count))) {
+					(*p_count) = i;
+					return 0;
+				}
+			}
+			(*p_count) = temp + 1;
+		}
 		strcpy(out[out_count].value, input);
-		strcpy(out[out_count++].name, "Comparison");
+		strcpy(out[out_count++].name, "Arithmetic");
 		return 1;
 	}
 	else if ('*' == save[(*p_count)]) {
@@ -317,6 +346,7 @@ int checkWhiteSpace(int* p_count) {
 	}
 	else if ('\n' == save[(*p_count)]) {
 		(*p_count)++;
+		line++;
 		strcpy(out[out_count].value, "\\n");
 		strcpy(out[out_count++].name, "WhiteSpace");
 		return 1;
@@ -350,7 +380,7 @@ int checkWhiteSpace(int* p_count) {
 }
 
 int checkDigit(int* p_count) {
-	if (1 <= save[(*p_count)]-'0' && (int)save[(*p_count)]-'0' <= 9) {
+	if (1 <= save[(*p_count)] -'0' && save[(*p_count)]-'0' <= 9) {
 		return 1;
 	}
 	return 0;
@@ -368,6 +398,8 @@ int checkWord(int* p_count) {
 	int i = *p_count, c_input = 0, j;
 	char input[100];
 	memset(input, NULL, 100);
+	if (!(checkLetter(p_count) || '_' == save[(*p_count)]))
+		return 0;
 	while (1) {
 		if (checkLetter(p_count) || checkDigit(p_count) ||
 			'0' == save[(*p_count)] || '_' == save[(*p_count)]) {
@@ -410,31 +442,157 @@ int checkInteger(int* p_count) {
 	int i = *p_count, c_input = 0;
 	char input[100];
 	memset(input, NULL, 100);
-	if (checkDigit(*p_count)) {
-		(*p_count)++;
+	if (checkDigit(p_count)) {
+		input[c_input++] = save[(*p_count)++];
 		while (1) {
 			if (checkDigit(p_count) || '0' == save[(*p_count)]) {
 				input[c_input++] = save[(*p_count)++];
 			}
+			else if ('.' == save[(*p_count)]) {
+				// 소수
+				input[c_input++] = save[(*p_count)++];
+				checkFloat(p_count,input,c_input);
+				return 1;
+			}
 			else
 				break;
 		}
-
+	}
+	else if ('0' == save[(*p_count)]) {
+		input[c_input++] = save[(*p_count)++];
+		if ('.' == save[(*p_count)]) {
+			input[c_input++] = save[(*p_count)++];
+			checkFloat(p_count, input, c_input);
+			return 1;
+		}
+		else {
+			strcpy(out[out_count].value, input);
+			strcpy(out[out_count++].name, "SignedInteger");
+			return 1;
+		}
 	}
 	else if ('-' == save[(*p_count)]) {
-		(*p_count)--;
-		if (checkLetter(p_count) || checkDigit(p_count) ||
-			'0' == save[(*p_count)] || '_' == save[(*p_count)]) {
+		int temp = (*p_count)--;
+		while (save[*p_count] == ' ' || save[*p_count] == '\n' || save[*p_count] == '\t') {
+			(*p_count)--;
+		}
+		if ((checkLetter(p_count) || checkDigit(p_count) ||
+			'0' == save[(*p_count)] || '_' == save[(*p_count)]))
+		{
 			(*p_count) = i;
 			return 0;
 		}
-		(*p_count)++;
-
-		if (checkDigit(*p_count)) {
-
+		(*p_count) = temp;
+		input[c_input++] = save[(*p_count)++];
+		if (checkDigit(p_count)) {
+			input[c_input++] = save[(*p_count)++];
+			while (1) {
+				if (checkDigit(p_count) || '0' == save[(*p_count)]) {
+					input[c_input++] = save[(*p_count)++];
+				}
+				else if ('.' == save[(*p_count)]) {
+					// 소수
+					(*p_count)++;
+					checkFloat(p_count, input, c_input);
+					return 1;
+				}
+				else
+					break;
+			}
+		}
+		else if (save[(*p_count)] = '0') {
+			input[c_input++] = save[(*p_count)++];
+			if (save[(*p_count)] = '.') {
+				input[c_input++] = save[(*p_count)++];
+				checkFloat(p_count, input, c_input);
+				return 1;
+			}
+			(*p_count) = i;
+			return 0;
 		}
 	}
 
+	if (input[0] == NULL)
+		return 0;
+	else {
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "SignedInteger");
+		return 1;
+	}
+
 	(*p_count) = i;
+	return 0;
+}
+
+int checkFloat(int* p_count, char* input, int c_input) {
+	if (!(checkDigit(p_count) || '0' == save[(*p_count)])) {
+		printf("There is float error in %d line", line);
+		exit(-1);
+	}
+	input[c_input++] = save[(*p_count)++];
+	while (1) {
+		if (checkDigit(p_count) || '0' == save[(*p_count)]) {
+			input[c_input++] = save[(*p_count)++];
+		}
+		else {
+			(*p_count)--;
+			while (save[(*p_count)] == '0'){
+				input[--c_input] = NULL;
+				(*p_count)--;
+			}
+			if (save[*p_count] == '.') {
+				input[c_input] = save[++(*p_count)];
+				(*p_count)++;
+				strcpy(out[out_count].value, input);
+				strcpy(out[out_count++].name, "FloatNumber");
+				return 1;
+			}
+			else {
+				(*p_count)++;
+				strcpy(out[out_count].value, input);
+				strcpy(out[out_count++].name, "FloatNumber");
+				return 1;
+			}
+		}
+	}
+}
+
+int checkComma(int* p_count) {
+	int i = *p_count, c_input = 0, j;
+	char input[100];
+	memset(input, NULL, 100);
+	input[c_input++] = save[*p_count];
+	if (',' == save[(*p_count)++]) {
+		strcpy(out[out_count].value, input);
+		strcpy(out[out_count++].name, "Comma");
+		return 1;
+	}
+	(*p_count) = i;
+	return 0;
+}
+
+int checkLiteral(int* p_count) {
+	int i = *p_count, c_input = 0;
+	char input[100];
+	memset(input, NULL, 100);
+	if ('\"' == save[(*p_count)]) {
+		input[c_input++] = save[(*p_count)++];
+		while (1) {
+			if (checkDigit(p_count) || '0' == save[(*p_count)]||
+				checkLetter(p_count)||checkBlank(p_count)) {
+				input[c_input++] = save[(*p_count)++];
+			}
+			else if ('\"' == save[(*p_count)]) {
+				input[c_input++] = save[(*p_count)++];
+				strcpy(out[out_count].value, input);
+				strcpy(out[out_count++].name, "LiteralString");
+				return 1;
+			}
+			else {
+				printf("There is \'LiteralString\' in line %d\n", line);
+				exit(-1);
+			}
+		}
+	}
 	return 0;
 }

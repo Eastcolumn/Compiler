@@ -1,25 +1,23 @@
 		type				value		
-               Lbrac                   (
-               Rbrac                   )
-              Lparen                   {
-              Rparen                   }
-          Assignment                   =
-               Rbrac                   )
-          Teriminate                   ;
-             Bitwise                  >>
-          Assignment                   =
-          Comparison                   <
-          Comparison                  >=
-          Assignment                   =
-          Arithmetic                   +
-          Comparison                  -*
-          Arithmetic                   /
-          WhiteSpace                  \n
-          WhiteSpace                  \t
-          WhiteSpace                  \n
-          WhiteSpace                    
-          Identifier                  a1
-          WhiteSpace                    
         VariableType                 int
           WhiteSpace                    
-             Keyword                  if
+          Identifier                main
+               Lbrac                   (
+               Rbrac                   )
+          WhiteSpace                    
+              Lparen                   {
+          WhiteSpace                  \n
+          WhiteSpace                  \t
+          Identifier              printf
+               Lbrac                   (
+       LiteralString       "Hello World"
+               Rbrac                   )
+          Teriminate                   ;
+          WhiteSpace                  \n
+          WhiteSpace                  \t
+             Keyword              return
+          WhiteSpace                    
+       SignedInteger                   0
+          Teriminate                   ;
+          WhiteSpace                  \n
+              Rparen                   }
