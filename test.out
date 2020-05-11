@@ -1,2 +1,110 @@
 		type				value		
-          Identifier              int123
+          WhiteSpace                  \t
+        VariableType                 int
+          WhiteSpace                    
+          Identifier                main
+              Lparen                   (
+              Rparen                   )
+          WhiteSpace                    
+               Lbrac                   {
+          WhiteSpace              \n\t\t
+        VariableType                 int
+          WhiteSpace                    
+          Identifier                   a
+          WhiteSpace                    
+  AssignmentOperator                   =
+          WhiteSpace                    
+       SignedInteger                   1
+          Teriminate                   ;
+          WhiteSpace              \n\t\t
+        VariableType                 int
+          WhiteSpace                    
+          Identifier                   b
+          WhiteSpace                    
+  AssignmentOperator                   =
+          WhiteSpace                    
+       SignedInteger                   2
+          Teriminate                   ;
+          WhiteSpace              \n\t\t
+        VariableType               float
+          WhiteSpace                    
+          Identifier                   c
+          WhiteSpace                    
+  AssignmentOperator                   =
+          WhiteSpace                    
+         FloatNumber                3.14
+          Teriminate                   ;
+          WhiteSpace              \n\t\t
+        VariableType                 int
+          WhiteSpace                    
+          Identifier                   d
+          WhiteSpace                    
+  AssignmentOperator                   =
+          WhiteSpace                    
+              Lparen                   (
+        VariableType                 int
+              Rparen                   )
+          Identifier                   c
+          Teriminate                   ;
+          WhiteSpace              \n\t\t
+        VariableType                 int
+          WhiteSpace                    
+          Identifier                   e
+          WhiteSpace                    
+  AssignmentOperator                   =
+          WhiteSpace                    
+              Lparen                   (
+        VariableType                 int
+              Rparen                   )
+         FloatNumber                -314
+          Teriminate                   ;
+          WhiteSpace            \n\t\t\t
+  ArithmeticOperator                   -
+          WhiteSpace                    
+         FloatNumber                 0.0
+          WhiteSpace            \n\t\t\t
+  ArithmeticOperator                   -
+          WhiteSpace                    
+         FloatNumber                 0.0
+       SignedInteger                   0
+          WhiteSpace            \n\t\t\t
+  ArithmeticOperator                   -
+          WhiteSpace                    
+         FloatNumber                 0.0
+         FloatNumber                 0.0
+          WhiteSpace            \n\t\t\t
+       SignedInteger                   0
+          Identifier                 abc
+          WhiteSpace            \n\t\t\t
+          Identifier            if123abc
+          WhiteSpace            \n\t\t\t
+  AssignmentOperator                   =
+          WhiteSpace                    
+              Lparen                   (
+              Rparen                   )
+       SignedInteger                  12
+          WhiteSpace            \n\t\t\t
+          Identifier              printf
+              Lparen                   (
+       LiteralString       "Hello World"
+              Rparen                   )
+          Teriminate                   ;
+          WhiteSpace              \n\t\t
+             Keyword                  if
+          WhiteSpace                    
+              Lparen                   (
+          Identifier                   a
+          WhiteSpace                    
+  ComparisonOperator                  ==
+          WhiteSpace                    
+          Identifier                   b
+              Rparen                   )
+          WhiteSpace            \n\t\t\t
+          Identifier                   a
+          WhiteSpace                    
+     BitwiseOperator                  <<
+          WhiteSpace                    
+          Identifier                   b
+          Teriminate                   ;
+          WhiteSpace                \n\t
+               Rbrac                   }
