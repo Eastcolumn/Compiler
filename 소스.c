@@ -111,7 +111,7 @@ void compile() {
 int checkLbrac(int* p_count) {
 	int i = *p_count, c_input = 0;				    // c_input : token의 value를 저장할 input의 index number / i : 함수에 들어올때 원래 가르키던 문자열의 index를 저장
 	char input[100];								// input   : token의 value를 저장할 배열
-	memset(input, NULL, 100);						// 배열 초기화
+	memset(input, 0, 100);						// 배열 초기화
 	input[c_input++] = save[*p_count];
 	if ('{' == save[(*p_count)++]) {		        // 해당 배열에 해당할 경우 value와 name을 out 구조체에 저장
 		strcpy(out[out_count].value, input);
@@ -125,7 +125,7 @@ int checkLbrac(int* p_count) {
 int checkRbrac(int* p_count) {
 	int i = *p_count, c_input = 0;
 	char input[100];
-	memset(input, NULL, 100);
+	memset(input, 0, 100);
 	input[c_input++] = save[*p_count];
 	if ('}' == save[(*p_count)++]) {
 		strcpy(out[out_count].value, input);
@@ -139,7 +139,7 @@ int checkRbrac(int* p_count) {
 int checkLparen(int* p_count) {
 	int i = *p_count, c_input = 0;
 	char input[100];
-	memset(input, NULL, 100);
+	memset(input, 0, 100);
 	input[c_input++] = save[*p_count];
 	if ('(' == save[(*p_count)++]) {
 		strcpy(out[out_count].value, input);
@@ -153,7 +153,7 @@ int checkLparen(int* p_count) {
 int checkRparen(int* p_count) {
 	int i = *p_count, c_input = 0;
 	char input[100];
-	memset(input, NULL, 100);
+	memset(input, 0, 100);
 	input[c_input++] = save[*p_count];
 	if (')' == save[(*p_count)++]) {
 		strcpy(out[out_count].value, input);
@@ -168,7 +168,7 @@ int checkRparen(int* p_count) {
 int checkTerminate(int* p_count) {
 	int i = *p_count, c_input = 0;
 	char input[100];
-	memset(input, NULL, 100);
+	memset(input, 0, 100);
 	input[c_input++] = save[*p_count];
 	if (';' == save[(*p_count)++]) {
 		strcpy(out[out_count].value, input);
@@ -182,7 +182,7 @@ int checkTerminate(int* p_count) {
 int checkOperator(int* p_count) {
 	int i = *p_count, c_input = 0;
 	char input[100];
-	memset(input, NULL, 100);
+	memset(input, 0, 100);
 	input[c_input++] = save[*p_count];
 
 	if ('=' == save[(*p_count)]) {
@@ -358,7 +358,7 @@ int checkBlank(int* p_count) {               // ' '일 경우
 int checkWhiteSpace(int* p_count) {
 	int i = *p_count, c_input = 0;
 	char input[100];
-	memset(input, NULL, 100);
+	memset(input, 0, 100);
 	if (!(checkBlank(p_count) || '\n' == save[(*p_count)] ||
 		'\t' == save[*p_count]))
 		return 0;
@@ -404,7 +404,7 @@ int checkLetter(int* p_count) {
 int checkWord(int* p_count) {
 	int i = *p_count, c_input = 0;
 	char input[100];
-	memset(input, NULL, 100);
+	memset(input, 0, 100);
 	if (!(checkLetter(p_count) || '_' == save[(*p_count)]))               // Letter거나 '_'으로 시작하는 문자열이 아닐경우 return 0
 		return 0;
 	while (1) {
@@ -416,7 +416,7 @@ int checkWord(int* p_count) {
 			break;
 	}
 
-	if (input[0] == NULL)                                       // 혹시 문자열이 NULL인경우
+	if (input[0] == '\0')                                       // 혹시 문자열이 NULL인경우
 		return 0;
 	else if (strcmp(input, "int") == 0 || strcmp(input, "char") == 0 ||      // 받은 문자열이 VariableType에 속하는 경우
 		strcmp(input, "float") == 0 || strcmp(input, "bool") == 0)
@@ -448,7 +448,7 @@ int checkWord(int* p_count) {
 int checkInteger(int* p_count) {
 	int i = *p_count, c_input = 0;
 	char input[100];
-	memset(input, NULL, 100);										 // 처음 시작은 Digit,-,0으로 구성
+	memset(input, 0, 100);										 // 처음 시작은 Digit,-,0으로 구성
 	if (checkDigit(p_count)) {                                       // 시작이 Digit인 경우
 		input[c_input++] = save[(*p_count)++];
 		while (1) {
@@ -522,7 +522,7 @@ int checkInteger(int* p_count) {
 		}
 	}
 
-	if (input[0] == NULL)
+	if (input[0] == '\0')
 		return 0;
 	else {
 		strcpy(out[out_count].value, input);
@@ -548,7 +548,7 @@ int checkFloat(int* p_count, char* input, int c_input) {            // checkInte
 		else {													 // 숫자외에 다른 input이 들어올경우
 			(*p_count)--;
 			while (save[(*p_count)] == '0') {                     // 다른 input 이전에 값이 0일 경우 0이 아닌 값까지 포인터를 뒤로 돌림
-				input[--c_input] = NULL;                        // 10.00은 float가 아니기 때문에 추가로 읽은 0 값들은 삭제
+				input[--c_input] = '\0';                        // 10.00은 float가 아니기 때문에 추가로 읽은 0 값들은 삭제
 				(*p_count)--;
 			}
 			if (save[*p_count] == '.') {                        // 만약 0이 아닌 최초 값이 .일 경우 xxxx.0까지 저장
@@ -571,7 +571,7 @@ int checkFloat(int* p_count, char* input, int c_input) {            // checkInte
 int checkComma(int* p_count) {                              // , 일 경우
 	int i = *p_count, c_input = 0;
 	char input[100];
-	memset(input, NULL, 100);
+	memset(input, 0, 100);
 	input[c_input++] = save[*p_count];
 	if (',' == save[(*p_count)++]) {
 		strcpy(out[out_count].value, input);
@@ -585,7 +585,7 @@ int checkComma(int* p_count) {                              // , 일 경우
 int checkLiteral(int* p_count) {
 	int i = *p_count, c_input = 0;
 	char input[100];
-	memset(input, NULL, 100);
+	memset(input, 0, 100);
 	if ('\"' == save[(*p_count)]) {                                 // 처음 문자열은 " 이여야 함
 		input[c_input++] = save[(*p_count)++];
 		while (1) {
